@@ -18,7 +18,7 @@
 				h1,h2 { font-variant:small-caps; }
 				.main { background: white; width: 800px; border: 1px solid black; border-radius: 10px; border: 3px solid black; margin-left: auto;  margin-right: auto; }
 				.header { height: 100px; background: black url(http://thumbs.dreamstime.com/thumblarge_702/1342801623J7VAmO.jpg); border-bottom: 2px solid grey; }
-				.header h1 { color: white; margin: 0; font-size: 90px; text-align: center; text-shadow: 0 0 10px black; }
+				h1 { color: white; margin: 0; font-size: 90px; text-align: center; text-shadow: 0 0 10px black; }
 				.menu { margin: 5px; border-bottom: 1px dashed grey; height: 25px }
 				.menu a { }
 				.menu .right-aligned { float: right; }
