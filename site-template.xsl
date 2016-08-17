@@ -12,12 +12,12 @@
 			<xsl:apply-templates select="@*"/>
 			<!-- Workaround for Microsoft Bug #s 636728 and 572123  X-UA-Compatible meta is ignored when inside conditional comments -->
 			<meta http-equiv="X-UA-Compatible" content="IE=9"/>
-			<script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
-			<script src="http://eli.thegreenplace.net/theme/js/bootstrap.min.js"></script>
-			<link href="http://eli.thegreenplace.net/theme/css/pygments/vs.css" rel="stylesheet"/>
-			<link href="http://eli.thegreenplace.net/theme/css/font-awesome.min.css" rel="stylesheet"/>
-			<link rel="stylesheet" href="http://eli.thegreenplace.net/theme/css/bootstrap.min.css" type="text/css"/>
-			<link rel="stylesheet" href="http://eli.thegreenplace.net/theme/css/style.css" type="text/css"/>
+			<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+			<script src="https://eli.thegreenplace.net/theme/js/bootstrap.min.js"></script>
+			<link href="https://eli.thegreenplace.net/theme/css/pygments/vs.css" rel="stylesheet"/>
+			<link href="https://eli.thegreenplace.net/theme/css/font-awesome.min.css" rel="stylesheet"/>
+			<link rel="stylesheet" href="https://eli.thegreenplace.net/theme/css/bootstrap.min.css" type="text/css"/>
+			<link rel="stylesheet" href="https://eli.thegreenplace.net/theme/css/style.css" type="text/css"/>
 			<xsl:apply-templates select="node()"/>
 		</xsl:copy>
 	</xsl:template>
