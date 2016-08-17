@@ -17,6 +17,11 @@
 			<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" type="text/css"/>
 			<link rel="stylesheet" href="style.css" type="text/css"/>
 			<link rel="stylesheet" href="css/font-awesome.min.css"/>
+			<style>
+				li a { border-bottom: 2px solid grey; }
+				li a:hover { border-bottom: 2px solid black; }
+			</style>
+
 			<xsl:apply-templates select="node()"/>
 		</xsl:copy>
 	</xsl:template>
@@ -40,25 +45,25 @@
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ul class="nav navbar-nav navbar-right">
                 <li>
-                    <a href="http://eli.thegreenplace.net/pages/about">
+                    <a href="about.xhtml">
                         <i class="fa fa-question"></i>
                         <span class="icon-label">About</span>
                     </a>
                 </li>
                 <li>
-                    <a href="http://eli.thegreenplace.net/pages/code">
+                    <a href="#">
                         <i class="fa fa-github"></i>
                         <span class="icon-label">Code</span>
                     </a>
                 </li>
                 <li>
-                    <a href="http://eli.thegreenplace.net/pages/code">
+                    <a href="#">
                         <i class="fa fa-envelope-o"></i>
                         <span class="icon-label">Contact</span>
                     </a>
                 </li>
                 <li>
-                    <a href="http://eli.thegreenplace.net/archives/all">
+                    <a href="#">
                         <i class="fa fa-th-list"></i>
                         <span class="icon-label">Archives</span>
                     </a>
@@ -70,12 +75,9 @@
 </div> <!-- /.navbar -->
 
 
-			<div class="main">
-				<div class="content">
+			<div class="container">
+				<div>
 					<xsl:apply-templates select="node()"/>
-				</div>
-				<div class="feedback">
-					<h1>Feedback</h1>
 				</div>
 			</div>
 
