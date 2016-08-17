@@ -13,11 +13,10 @@
 			<!-- Workaround for Microsoft Bug #s 636728 and 572123  X-UA-Compatible meta is ignored when inside conditional comments -->
 			<meta http-equiv="X-UA-Compatible" content="IE=9"/>
 			<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-			<script src="https://eli.thegreenplace.net/theme/js/bootstrap.min.js"></script>
-			<link href="https://eli.thegreenplace.net/theme/css/pygments/vs.css" rel="stylesheet"/>
-			<link href="https://eli.thegreenplace.net/theme/css/font-awesome.min.css" rel="stylesheet"/>
-			<link rel="stylesheet" href="https://eli.thegreenplace.net/theme/css/bootstrap.min.css" type="text/css"/>
-			<link rel="stylesheet" href="https://eli.thegreenplace.net/theme/css/style.css" type="text/css"/>
+			<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+			<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" type="text/css"/>
+			<link rel="stylesheet" href="style.css" type="text/css"/>
+			<link rel="stylesheet" href="css/font-awesome.min.css"/>
 			<xsl:apply-templates select="node()"/>
 		</xsl:copy>
 	</xsl:template>
@@ -36,7 +35,7 @@
                 <span class="icon-bar"></span>
             </button>
             <a href="/" class="navbar-brand">
-                <img src="logo.png" width="32"/> Mike Brown's Website</a>
+                <img src="logo.png" width="32" style="display: inline-block"/> Mike's Developer Log</a>
         </div>
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ul class="nav navbar-nav navbar-right">
@@ -54,7 +53,7 @@
                 </li>
                 <li>
                     <a href="http://eli.thegreenplace.net/pages/code">
-                        <i class="fa fa-github"></i>
+                        <i class="fa fa-envelope-o"></i>
                         <span class="icon-label">Contact</span>
                     </a>
                 </li>
