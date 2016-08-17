@@ -45,26 +45,6 @@
 	</xsl:template>
 
 	<xsl:template match="/html:html/html:body">
-		<div id="fb-root"></div>
-		<script>
-		window.onload = function () {
-			var t = document.getElementById('fb-comment-box');
-			if (t) {
-				var uri = location.href;
-				uri = uri.replace('http://','');
-				if (!uri.startsWith('www.')) uri = "www." + uri;
-				t.setAttribute('data-href', uri);
-			}	
-				(function(d, s, id) {  
-				var js, fjs = d.getElementsByTagName(s)[0]; 
-				if (d.getElementById(id)) return; 
-				js = d.createElement(s); 
-				js.id = id;
-				js.src = "//connect.facebook.net/en_GB/all.js#xfbml=1";
-				fjs.parentNode.insertBefore(js, fjs);
-			}(document, 'script', 'facebook-jssdk'));
-		};
-		</script>
 		<xsl:copy>
 			<xsl:apply-templates select="@*"/>
 			<div class="main">
@@ -80,9 +60,7 @@
 					<xsl:apply-templates select="node()"/>
 				</div>
 				<div class="feedback">
-					<div class="fb-like" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false"></div><br/>
 					<h1>Feedback</h1>
-					<div id="fb-comment-box" class="fb-comments" data-width="700" data-num-posts="10"></div>
 				</div>
 				<div class="footer">
 					2013&#169; Segfault, Mike Brown, All Rights Reserved. <a href="http://validator.w3.org/check?uri=referer">W3C</a>
