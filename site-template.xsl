@@ -2,8 +2,7 @@
    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
    xmlns:html="http://www.w3.org/1999/xhtml"
    xmlns="http://www.w3.org/1999/xhtml"
-   exclude-result-prefixes="xsl html"
->
+   exclude-result-prefixes="xsl html">
 	<xsl:output method="html" version="1.0" omit-xml-declaration="no" doctype-system="about:legacy-compat"/>
 
 	<!-- This is the "Fix for IE" based on the example in W3C's FAQs: http://www.w3.org/MarkUp/2004/xhtml-faq#ie -->
@@ -13,33 +12,12 @@
 			<xsl:apply-templates select="@*"/>
 			<!-- Workaround for Microsoft Bug #s 636728 and 572123  X-UA-Compatible meta is ignored when inside conditional comments -->
 			<meta http-equiv="X-UA-Compatible" content="IE=9"/>
-			<style>
-				body { font-family: georgia; background: url(http://i143.photobucket.com/albums/r131/sushigurl92/Backgrounds/th_pika1.jpg); }
-				h1,h2 { font-variant:small-caps; }
-				.main { background: white; width: 800px; border: 1px solid black; border-radius: 10px; border: 3px solid black; margin-left: auto;  margin-right: auto; }
-				.header { height: 100px; background: black url(http://thumbs.dreamstime.com/thumblarge_702/1342801623J7VAmO.jpg); border-bottom: 2px solid grey; }
-				.header h1 { color: white; margin: 0; font-size: 90px; text-align: center; text-shadow: 0 0 10px black; }
-				.menu { margin: 5px; border-bottom: 1px dashed grey; height: 25px }
-				.menu a { }
-				.menu .right-aligned { float: right; }
-				.content { padding: 25px }
-				.feedback { }
-				.footer { border-top: 1px solid black; padding: 5px; text-align: center; }
-				.feedback .fb-comments { margin-left: auto;  margin-right: auto; }
-				.feedback h1 { color: white; background: url(http://www.webmastertoolkits.com/images/gradient-black-grey.png) 100% 100px; border-top: 2px solid grey; border-bottom: 2px solid grey; padding: 5px; }
-			</style>
-			<script>
-				if (typeof String.prototype.startsWith != 'function') {
-					String.prototype.startsWith = function (str){
-						return this.slice(0, str.length) == str;
-					};
-				}
-				if (typeof String.prototype.endsWith != 'function') {
-					String.prototype.endsWith = function (str){
-						return this.slice(-str.length) == str;
-					};
-				}
-			</script>
+			<script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+			<script src="http://eli.thegreenplace.net/theme/js/bootstrap.min.js"></script>
+			<link href="http://eli.thegreenplace.net/theme/css/pygments/vs.css" rel="stylesheet"/>
+			<link href="http://eli.thegreenplace.net/theme/css/font-awesome.min.css" rel="stylesheet"/>
+			<link rel="stylesheet" href="http://eli.thegreenplace.net/theme/css/bootstrap.min.css" type="text/css"/>
+			<link rel="stylesheet" href="http://eli.thegreenplace.net/theme/css/style.css" type="text/css"/>
 			<xsl:apply-templates select="node()"/>
 		</xsl:copy>
 	</xsl:template>
@@ -47,25 +25,73 @@
 	<xsl:template match="/html:html/html:body">
 		<xsl:copy>
 			<xsl:apply-templates select="@*"/>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation" style="background: #E6DBFF">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="/" class="navbar-brand">
+                <img src="logo.png" width="32"/> Mike Brown's Website</a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="http://eli.thegreenplace.net/pages/about">
+                        <i class="fa fa-question"></i>
+                        <span class="icon-label">About</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="http://eli.thegreenplace.net/pages/code">
+                        <i class="fa fa-github"></i>
+                        <span class="icon-label">Code</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="http://eli.thegreenplace.net/pages/code">
+                        <i class="fa fa-github"></i>
+                        <span class="icon-label">Contact</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="http://eli.thegreenplace.net/archives/all">
+                        <i class="fa fa-th-list"></i>
+                        <span class="icon-label">Archives</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+
+
 			<div class="main">
-				<div class="header">
-					<h1>Segfault</h1>
-				</div>
-				<div class="menu">
-					<a href="/">Index</a> /
-					<a href="#">Contact</a> /
-					<a href="#">About Me</a>
-				</div>
 				<div class="content">
 					<xsl:apply-templates select="node()"/>
 				</div>
 				<div class="feedback">
 					<h1>Feedback</h1>
 				</div>
-				<div class="footer">
-					2013&#169; Segfault, Mike Brown, All Rights Reserved. <a href="http://validator.w3.org/check?uri=referer">W3C</a>
-				</div>
 			</div>
+
+<footer>
+   <div class="container">
+      <hr/>
+      <div class="row">
+         <div class="col-xs-10">
+            &#169; 2003-2016 Mike Brown, All Rights Reserved. <a href="http://validator.w3.org/check?uri=referer">W3C</a>
+         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+
 		</xsl:copy>
 	</xsl:template>
 
