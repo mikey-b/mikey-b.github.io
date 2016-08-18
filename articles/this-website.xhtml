@@ -1,0 +1,37 @@
+<article>
+	<div class="page-header">
+		<h1>This Website <small>Quirks And All</small></h1>
+		<span class="label label-default">Blog</span> <span class="label label-default">HTML5</span> <span class="label label-default">XSLT</span> <span class="label label-default">Bootstrap.js</span>
+	</div>
+	<p>So, Ive been programming for a good 20 years now, and I figure its time I got myself a website to talk about my experience's and experiments! What better place to start, than this website.</p>
+	<p>I have some demanding requirements for this website.</p>
+	<ul>
+		<li>Article Based - I wanted a blog like website, somewhere I can write and develop articles in my own time and publish them when ready</li>
+		<li>Edit Anywhere - I wanted a low bar to writing, and want to be able to write an article on my mobile, a computer with limited internet access, or directly onto the hosting server</li>
+		<li>Uniform Appearance - I wanted a consistant and pleasing look to the whole website</li>
+		<li>Progress not to be done live - Articles currently being written should not be visible to the outside world.</li>
+		<li>Advanced Features - I wanted to be able to offer some advanced features to make the site more useful, such as feedback comment box on the bottom of articles etc</li>
+	</ul>
+	<p>This is actually my 3rd attempt at a website, and Ive a new requirement. <b>Not to be hacked</b></p>
+
+<div class="row">
+  <div class="col-sm-6 col-md-6">
+    <div class="thumbnail">
+		<a href="articles/images/1102658_10151676346924355_1259929514_o.jpg" class="thumbnail">
+	      <img src="articles/images/1102658_10151676346924355_1259929514_o.jpg" alt="Hacked"/>
+		</a>
+      <div class="caption">
+        <h3>Hacked</h3>
+      </div>
+    </div>
+  </div>
+</div>
+
+	<p>To keep costs down, and the fact I didnt need a lot of the fancy features most websites offer these days. I opted for a &#163;5 per year hosting plan off of ebay. It offered everything I needed, except security. I got hacked twice while hosting with them. Fortunately nothing important is hosted on this website and everything was backed up. But it was annoying.</p>
+	<h1>Nuts and Bolts</h1>
+	<p>So, lets take a look at the solution ive come up with! This website is completely static. Written entirely in xhtml, xml and XSLT files. And all of this is hosted on github.</p>
+	<p>Having static files has many benefits; Backups are simple, and no moving parts makes it nice for the hosting server. But the big wins here are that I can write an article offline on any computer and see how its looking and displaying locally. I can write my articles in my own time, anywhere. And simply push the changes to github when im ready to publish</p>
+	<p>However, this does create the challenge with a templating uniform site layout, and injecting advanced features into pages. XSLT is very powerful and W3C standard web technology that I can use to implement the templating and styling I need.</p>
+	<p>The whole site styles are stored in one XSLT file, and completely cached. And "dynamic" sections are pulled from multiple files to create the page you see and read.</p>
+	<p>If you're interested in seeing the guts of this site, you can check everything out over at <a href="https://github.com/mikey-b/mikey-b.github.io">Github</a>.</p>
+</article>
