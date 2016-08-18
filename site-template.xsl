@@ -98,7 +98,7 @@
 
 	<xsl:template match="html:newestBlogArticle">
 					<xsl:apply-templates select="document(document('article-list.xml')/articles/article[1]/@href)"/>
-					<hr/>
+
 					<a class="btn btn-default">
 						<xsl:attribute name="href"><xsl:value-of select="document('article-list.xml')/articles/article[2]/@href"/></xsl:attribute>
 						&lt; <xsl:value-of select="document('article-list.xml')/articles/article[2]/@title"/>
