@@ -122,7 +122,7 @@
  *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables */
 
 var disqus_config = function () {
-    this.page.url = "]]><xsl:value-of select="document('article-list.xml')/articles/article[1]/@href"/><![CDATA[";  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.url = "http://www.segfault.co.uk/]]><xsl:value-of select="document('article-list.xml')/articles/article[1]/@href"/><![CDATA[";  // Replace PAGE_URL with your page's canonical URL variable
     this.page.identifier = "]]><xsl:value-of select="document('article-list.xml')/articles/article[1]/@title"/><![CDATA["; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
 };
 
