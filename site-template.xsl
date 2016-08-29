@@ -113,7 +113,7 @@
 						<xsl:attribute name="href"><xsl:value-of select="document('article-list.xml')/articles/article[2]/@href"/></xsl:attribute>
 						&lt; <xsl:value-of select="document('article-list.xml')/articles/article[2]/@title"/>
 					</a>
-					
+					<br/>
 <div id="disqus_thread"></div>
 <script><![CDATA[
 
