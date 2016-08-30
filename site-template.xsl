@@ -21,6 +21,7 @@
 				li a { border-bottom: 2px solid grey; }
 				li a:hover { border-bottom: 2px solid black; }
 			</style>
+
 <script><![CDATA[
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -109,10 +110,28 @@
 	<xsl:template match="html:newestBlogArticle">
 					<xsl:apply-templates select="document(document('article-list.xml')/articles/article[1]/@href)"/>
 
-					<a class="btn btn-default">
+        		<div class="col-md-12 text-right">
+					<strong>Share this page: </strong>
+                    <ul class="social-network social-circle">
+                        <li><a class="icoFacebook" title="Facebook">
+							<xsl:attribute name="href">https://www.facebook.com/sharer/sharer.php?u=http://www.segfault.co.uk/<xsl:value-of select="document('article-list.xml')/articles/article[1]/@href"/></xsl:attribute>
+							<i class="fa fa-facebook"></i></a></li>
+                        <li><a href="#" class="icoTwitter" title="Twitter">
+							<xsl:attribute name="href">https://twitter.com/home?status=http://www.segfault.co.uk/<xsl:value-of select="document('article-list.xml')/articles/article[1]/@href"/></xsl:attribute>
+							<i class="fa fa-twitter"></i></a></li>
+                        <li><a href="#" class="icoGoogle" title="Google +">
+							<xsl:attribute name="href">https://plus.google.com/share?url=http://www.segfault.co.uk/<xsl:value-of select="document('article-list.xml')/articles/article[1]/@href"/></xsl:attribute>
+							<i class="fa fa-google-plus"></i></a></li>
+                    </ul>				
+				</div>
+
+					<a class="btn btn-labeled btn-default">
 						<xsl:attribute name="href"><xsl:value-of select="document('article-list.xml')/articles/article[2]/@href"/></xsl:attribute>
-						&lt; <xsl:value-of select="document('article-list.xml')/articles/article[2]/@title"/>
+						<span class="btn-label"><i class="glyphicon glyphicon-chevron-left"></i></span> <xsl:value-of select="document('article-list.xml')/articles/article[2]/@title"/>
 					</a>
+
+
+
 					<br/>
 <div id="disqus_thread"></div>
 <script><![CDATA[
