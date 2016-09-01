@@ -21,39 +21,6 @@
 				li a { border-bottom: 2px solid grey; }
 				li a:hover { border-bottom: 2px solid black; }
 			</style>
-<script><![CDATA[
-// Make sure the DOM elements are loaded and accounted for
-$(document).ready(function() {
-  // Match to Bootstraps data-toggle for the modal
-  // and attach an onclick event handler
-  $('a[data-toggle="modal"]').on('click', function(e) {
-
-    // From the clicked element, get the data-target arrtibute
-    // which BS3 uses to determine the target modal
-    var target_modal = $(e.currentTarget).data('target');
-    // also get the remote content's URL
-    var remote_content = e.currentTarget.href;
-
-    // Find the target modal in the DOM
-    var modal = $(target_modal);
-    // Find the modal's <div class="modal-body"> so we can populate it
-    var modalBody = $(target_modal + ' .modal-body');
-
-    // Capture BS3's show.bs.modal which is fires
-    // immediately when, you guessed it, the show instance method
-    // for the modal is called
-    modal.on('show.bs.modal', function () {
-            // use your remote content URL to load the modal body
-            modalBody.load(remote_content);
-        }).modal();
-        // and show the modal
-
-    // Now return a false (negating the link action) to prevent Bootstrap's JS 3.1.1
-    // from throwing a 'preventDefault' error due to us overriding the anchor usage.
-    return false;
-  });
-});]]>
-</script>
 
 <script><![CDATA[
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -66,6 +33,13 @@ $(document).ready(function() {
 ]]>
 </script>
 
+<script><![CDATA[
+    function fbShare(url, title, descr, image, winWidth, winHeight) {
+        var winTop = (screen.height / 2) - (winHeight / 2);
+        var winLeft = (screen.width / 2) - (winWidth / 2);
+        window.open('http://www.facebook.com/sharer.php?s=100&p[title]=' + title + '&p[summary]=' + descr + '&p[url]=' + url + '&p[images][0]=' + image, 'sharer', 'top=' + winTop + ',left=' + winLeft + ',toolbar=0,status=0,width=' + winWidth + ',height=' + winHeight);
+    }
+]]></script>
 			<xsl:apply-templates select="node()"/>
 		</xsl:copy>
 	</xsl:template>
@@ -141,40 +115,23 @@ $(document).ready(function() {
 	</xsl:template>
 
 	<xsl:template match="html:newestBlogArticle">
-<div id="share" class="modal fade">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&#215;</button>
-        <h3 id="termsLabel" class="modal-title">Share This Page</h3>
-      </div>
-      <div class="modal-body">
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
-
 
 	<div class="row">
 		<div class="col-md-9">
-					<xsl:apply-templates select="document(document('article-list.xml')/articles/article[1]/@href)"/>
+			<xsl:apply-templates select="document(document('article-list.xml')/articles/article[1]/@href)"/>
 		</div>
 		<div class="col-md-3">
 			<br/>
 			<div class="panel panel-default">
 			  <div class="panel-heading">Recent Articles</div>
-<div class="list-group">
+			<div class="list-group">
 			    <xsl:for-each select="document('article-list.xml')/articles/article">
 					<a class="list-group-item">
 						<xsl:attribute name="href">/<xsl:value-of select="@href"/></xsl:attribute>
 						<i class="fa fa-arrow-right"></i>
 						<xsl:value-of select="@title"/><br/><small><xsl:value-of select="@date"/></small></a>
 				</xsl:for-each>
-</div>
-
+			</div>
 			</div>
 		</div>
 	</div>
@@ -182,15 +139,15 @@ $(document).ready(function() {
         		<div class="col-md-12 text-right">
 					<strong>Share this page: </strong>
                     <ul class="social-network social-circle">
-                        <li><a data-toggle="modal" data-target="#share" class="icoFacebook" title="Facebook">
-							<xsl:attribute name="href">https://www.facebook.com/sharer/sharer.php?u=http://www.segfault.co.uk/<xsl:value-of select="document('article-list.xml')/articles/article[1]/@href"/></xsl:attribute>
-							<i class="fa fa-facebook"></i></a></li>
-                        <li><a href="#" class="icoTwitter" title="Twitter">
-							<xsl:attribute name="href">https://twitter.com/home?status=http://www.segfault.co.uk/<xsl:value-of select="document('article-list.xml')/articles/article[1]/@href"/></xsl:attribute>
-							<i class="fa fa-twitter"></i></a></li>
-                        <li><a href="#" class="icoGoogle" title="Google +">
-							<xsl:attribute name="href">https://plus.google.com/share?url=http://www.segfault.co.uk/<xsl:value-of select="document('article-list.xml')/articles/article[1]/@href"/></xsl:attribute>
-							<i class="fa fa-google-plus"></i></a></li>
+                        <li><a class="icoFacebook" title="Facebook">
+				<xsl:attribute name="href">javascript:fbShare('http://www.segfault.co.uk/<xsl:value-of select="document('article-list.xml')/articles/article[1]/@href"/>', 'Fb Share', 'Share on Facebook', 'http://www.segfault.co.uk/logo.png', 520, 350)</xsl:attribute>
+				<i class="fa fa-facebook"></i></a></li>
+                        <li><a class="icoTwitter" title="Twitter">
+				<xsl:attribute name="href">https://twitter.com/home?status=http://www.segfault.co.uk/<xsl:value-of select="document('article-list.xml')/articles/article[1]/@href"/></xsl:attribute>
+				<i class="fa fa-twitter"></i></a></li>
+                        <li><a class="icoGoogle" title="Google +">
+				<xsl:attribute name="href">https://plus.google.com/share?url=http://www.segfault.co.uk/<xsl:value-of select="document('article-list.xml')/articles/article[1]/@href"/></xsl:attribute>
+				<i class="fa fa-google-plus"></i></a></li>
                     </ul>				
 				</div>
 
