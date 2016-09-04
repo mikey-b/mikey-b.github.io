@@ -18,11 +18,8 @@ function showPosition(position) {
     "<br>Longitude: " + position.coords.longitude; 
 }
 
-if (window.DeviceOrientationEvent) {
-  // Listen for the event and handle DeviceOrientationEvent object
-  window.addEventListener('deviceorientation', devOrientHandler, false);
-}
 
+function addTilt() {
 if (window.DeviceOrientationEvent) {
   document.getElementById("doEvent").innerHTML = "DeviceOrientation";
   // Listen for the deviceorientation event and handle the raw data
@@ -53,8 +50,9 @@ logo.style.transform =
 } else {
   document.getElementById("doEvent").innerHTML = "Not supported."
 }
+}
 </script>
-	<body onload="getLocation()">
+	<body onload="getLocation(); addTilt()">
 		<div style="color: white">Energy: <span>100</span>
   <table>
     <tr>
