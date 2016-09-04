@@ -12,7 +12,7 @@ function getLocation() {
 		x.innerHTML = "-";			
 		var watchID = navigator.geolocation.watchPosition(function(position) {
 			showPosition(position);
-		});
+		}, function(e) { x.innerHTML = 'ERROR(' + e.code + '): ' + e.message; });
 	} else {
         x.innerHTML = "Geolocation is not supported by this browser.";
     }
