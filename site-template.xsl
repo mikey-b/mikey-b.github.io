@@ -73,7 +73,7 @@
 </div> <!-- /.navbar -->
 
 
-			<div class="container">
+			<div class="container ">
 				<div>
 					<xsl:apply-templates select="node()"/>
 				</div>
@@ -110,10 +110,10 @@
 	<xsl:template match="html:newestBlogArticle">
 
 	<div class="row">
-		<div class="col-md-9">
+		<div class="col-sm-9">
 			<xsl:apply-templates select="document(document('article-list.xml')/articles/article[1]/@href)"/>
 		</div>
-		<div class="col-md-3">
+		<div class="col-sm-3">
 			<br/>
 			<div class="panel panel-default">
 			  <div class="panel-heading">Recent Articles</div>
