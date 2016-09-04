@@ -10,7 +10,7 @@ function getLocation() {
 	var x = document.getElementById("demo");
 	if ("geolocation" in navigator) {
 		x.innerHTML = "-";			
-		navigator.geolocation.getCurrentPosition(function(position) {
+		var watchID = navigator.geolocation.watchPosition(function(position) {
 			showPosition(position);
 		});
 	} else {
