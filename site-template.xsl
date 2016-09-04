@@ -38,7 +38,7 @@
                 <span class="icon-bar"></span>
             </button>
             <a href="/" class="navbar-brand">
-                <img src="logo.png" width="32" style="display: inline-block"/> Mike's Developer Log</a>
+                <img src="images/logo.png" width="32" style="display: inline-block"/> Mike's Developer Log</a>
         </div>
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ul class="nav navbar-nav navbar-right">
