@@ -1,0 +1,394 @@
+<Module>
+<ModulePrefs title="Rota Tool" author="Mike Brown" author_email="shop325@stanjamesuk.com" height="500" scrolling="true">
+	<Optional feature="google.calendar-0.5.read"/>
+</ModulePrefs>
+<Content type="html">
+<![CDATA[
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"> 
+<html>
+<head>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+</head>
+<body> 
+<script> 
+	var srStart, srEnd;
+	var weekStart, weekEnd;
+	var ppStart, ppEnd;
+
+	var cStart, cEnd;
+	var cweekStart, cweekEnd;
+	var cppStart, cppEnd;
+
+		Date.prototype.addDays = function(days) {
+		    var dat = new Date(this.valueOf());
+		    dat.setDate(dat.getDate() + days);
+		    return dat;
+		}
+
+		function googledate_to_date(google_date) {
+			return new Date(google_date.year, google_date.month-1, google_date.date);
+		}
+
+		function date_to_googledate(jsdate) {
+			return { year: jsdate.getFullYear(), month: jsdate.getMonth()+1, date: jsdate.getDate(), hour: null, minute: null, second: null };
+		}
+
+		function getMonday( date ) {
+		    var day = date.getDay() || 7;  
+		    if( day !== 1 ) 
+        		date.setHours(-24 * (day - 1)); 
+		    return date;
+		}
+	
+		function isNumber(n) {
+			return !isNaN(parseFloat(n)) && isFinite(n);
+		}
+
+		function seconds2time (seconds) {
+			var hours   = Math.floor(seconds / 3600);
+			var minutes = Math.floor((seconds - (hours * 3600)) / 60);
+			var seconds = seconds - (hours * 3600) - (minutes * 60);
+			var time = "";
+
+			if (hours != 0) {
+			  time = hours+":";
+			}
+			if (minutes != 0 || time !== "") {
+			  minutes = (minutes < 10 && time !== "") ? "0"+minutes : String(minutes);
+			  time += minutes;
+			}
+
+			return time;
+		}
+	
+	function feedback() {
+		window.open("https://mail.google.com/mail/?view=cm&fs=1&su=Rota%20Tool%20Feedback&to=shop325@stanjamesuk.com");
+	}
+
+	function email(start, end) {
+		google.calendar.read.getEvents(
+				function(r) { 
+					res = calendarCallback(r);
+					out = res[2] + '\n\nSummary:\n' + res[1] + '\nTotal Hours: ' + res[0];
+					window.open("https://mail.google.com/mail/?view=cm&fs=1&su=ROTA%20" + start.date + '/' + start.month + '%20-%20' + end.date + '/' + end.month + "&body=" + encodeURIComponent(out));
+		} , '@viewer', start, end);
+	} 
+
+	function getMondayNumOne( p ) {
+		var base = new Date(2015, 7, 17);
+
+		var last_monday = getMonday( p );
+
+		var timeDiff = base.getTime() - last_monday.getTime() ;
+		var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+		var diffFromOneMonday = diffDays % 28;
+		if (diffFromOneMonday > 0) diffFromOneMonday -= 28;
+
+		var MondayOne = p.addDays(diffFromOneMonday);
+
+		return MondayOne;
+		
+	}
+	
+	function subscribeEventsCallback(e) { 
+		if (e) {
+			// Selected Range
+			srStart = e.startTime;
+			srEnd = e.endTime;
+
+			// Selected Week
+			weekStart = date_to_googledate(getMonday(googledate_to_date(srStart)));
+			weekEnd = date_to_googledate(getMonday(googledate_to_date(srStart)).addDays(7));
+
+			// Selected Pay Period
+			ppStart = date_to_googledate( getMondayNumOne( googledate_to_date(srStart) ) );
+			ppEnd = date_to_googledate( getMondayNumOne( googledate_to_date(srStart) ).addDays(28) );
+
+			// Get Selected Data
+			google.calendar.read.getEvents(
+				function(r) { 
+					res = calendarCallback(r);
+					document.getElementById('sr_total').innerText = res[0];
+					document.getElementById('sr_summary').innerText = res[1];
+					google.calendar.read.getEvents(
+						function(r2) {
+							res = calendarCallback(r2);
+							document.getElementById('sw_total').innerText = res[0];
+							document.getElementById('sw_summary').innerText = res[1];
+							google.calendar.read.getEvents(
+								function(r3) {
+									res = calendarCallback(r3);
+									document.getElementById('sm_total').innerText = res[0];
+									document.getElementById('sm_summary').innerText = res[1];
+								} , '@viewer', ppStart, ppEnd);
+						} , '@viewer', weekStart, weekEnd);
+			} , '@viewer', srStart, srEnd);
+
+			$( "#unselected_results" ).hide();
+			$( "#selected_results" ).show();
+
+		} else {
+
+			// Today
+			cStart = date_to_googledate(new Date());
+			cEnd = date_to_googledate(new Date().addDays(1));
+
+			// Current Week
+			cweekStart = date_to_googledate(getMonday(googledate_to_date(cStart)));
+			cweekEnd = date_to_googledate(getMonday(googledate_to_date(cStart)).addDays(7));
+
+			// Current Pay Period
+			cppStart = date_to_googledate( getMondayNumOne( googledate_to_date( cStart ) ) );
+			cppEnd = date_to_googledate( getMondayNumOne( googledate_to_date( cStart ) ).addDays(28) );
+
+			google.calendar.read.getEvents(
+				function(r) { 
+					res = calendarCallback(r);
+					document.getElementById('today_total').innerText = res[0];
+					document.getElementById('today_summary').innerText = res[1];
+					google.calendar.read.getEvents(
+						function(r2) {
+							res = calendarCallback(r2);
+							document.getElementById('week_total').innerText = res[0];
+							document.getElementById('week_summary').innerText = res[1];
+							google.calendar.read.getEvents(
+								function(r3) {
+									res = calendarCallback(r3);
+									document.getElementById('month_total').innerText = res[0];
+									document.getElementById('month_summary').innerText = res[1];
+								} , '@viewer', cppStart, cppEnd);
+						} , '@viewer', cweekStart, cweekEnd);
+			} , '@viewer', cStart, cEnd);
+
+			$( "#selected_results" ).hide();
+			$( "#unselected_results" ).show();
+		}
+
+	} 
+	
+	function pad(n) {
+	    return (n < 10) ? ("0" + n) : n;
+	}
+
+	function calendarCallback(response, totalbox, summarybox) { 
+		var out = '';
+		var summaryout = '';
+		var total = 0;
+		var summary = new Array;
+
+		for (var i = 0; i < response.length; ++i) { 
+			if ('error' in response[i]) { 
+				//out += 'Can\'t load calendar for ' + response[i].email + '\n'; 
+				continue; 
+			} 
+			
+			var previousdate;
+			var weekday = new Array(7);
+			weekday[0]=  "Sunday";
+			weekday[1] = "\nMonday";
+			weekday[2] = "Tuesday";
+			weekday[3] = "Wednesday";
+			weekday[4] = "Thursday";
+			weekday[5] = "Friday";
+			weekday[6] = "Saturday";	
+			
+			var events = response[i]['events']; 
+			for(var j = 0; j < events.length; ++j) { 
+				var e = events[j]; 
+				
+				if (isNumber(e.startTime.hour)) {
+					if (e.startTime.date != previousdate)
+					{
+						var d = new Date(e.startTime.year, e.startTime.month - 1, e.startTime.date);
+						out += '\n' + weekday[d.getDay()] + '. ';
+						previousdate = e.startTime.date;
+					}
+					
+					out +=  e.title + ' ' + e.startTime.hour + ':' + pad(e.startTime.minute) + '-' + e.endTime.hour + ':' + pad(e.endTime.minute) + '  ';
+
+					var date1 = new Date(e.startTime.year, e.startTime.month -1, e.startTime.date, e.startTime.hour, e.startTime.minute, 0, 0);
+					var date2 = new Date(e.endTime.year, e.endTime.month - 1, e.endTime.date, e.endTime.hour, e.endTime.minute, 0, 0);
+
+					var diff = date2 - date1;
+					//console.log([e.title, date1, date2, diff]);
+					if (!(e.title in summary)) { summary[e.title] = 0; }
+					summary[e.title] += diff;
+				}
+			} 
+
+			var total_hours = 0;
+			for(key in summary) {
+				summaryout += key + ' - ' + seconds2time(summary[key] / 1000) + '\n';
+				if (isNumber(summary[key])) total_hours += summary[key];
+			}
+			
+			total = seconds2time(total_hours / 1000);
+		}
+		return [total, summaryout, out];
+	} 
+	
+	function prettyCallback(response, oneperson) { 
+		var out = '';
+		var summaryout = '';
+		var total = 0;
+		var summary = new Array;
+
+		var data = new Array;
+
+		for (var i = 0; i < response.length; ++i) { 
+			if ('error' in response[i]) { 
+				//out += 'Can\'t load calendar for ' + response[i].email + '\n'; 
+				continue; 
+			} 
+			
+			var previousdate;
+			var weekday = new Array(7);
+			weekday[0]=  "Sunday";
+			weekday[1] = "Monday";
+			weekday[2] = "Tuesday";
+			weekday[3] = "Wednesday";
+			weekday[4] = "Thursday";
+			weekday[5] = "Friday";
+			weekday[6] = "Saturday";	
+			
+			var events = response[i]['events']; 
+			for(var j = 0; j < events.length; ++j) { 
+				var e = events[j]; 
+				
+				if (isNumber(e.startTime.hour)) {
+					if (e.startTime.date != previousdate)
+					{
+						var d = new Date(e.startTime.year, e.startTime.month - 1, e.startTime.date);
+						currentColumn = weekday[d.getDay()];
+						previousdate = e.startTime.date;
+					}
+
+					if (!data[e.title]) data[e.title] = new Array;
+					if (!data[e.title][currentColumn]) data[e.title][currentColumn] = new Array;
+					data[e.title][currentColumn]['start'] = e.startTime.hour + ':' + pad(e.startTime.minute);
+					data[e.title][currentColumn]['end'] = e.endTime.hour + ':' + pad(e.endTime.minute);
+
+					var date1 = new Date(e.startTime.year, e.startTime.month -1, e.startTime.date, e.startTime.hour, e.startTime.minute, 0, 0);
+					var date2 = new Date(e.endTime.year, e.endTime.month - 1, e.endTime.date, e.endTime.hour, e.endTime.minute, 0, 0);
+
+					var diff = date2 - date1;
+					//console.log([e.title, date1, date2, diff]);
+					if (!(e.title in summary)) { summary[e.title] = 0; }
+					summary[e.title] += diff;
+				}
+			} 
+
+			var total_hours = 0;
+			for(key in summary) {
+				summaryout += key + ' - ' + seconds2time(summary[key] / 1000) + '\n';
+				if (isNumber(summary[key])) total_hours += summary[key];
+			}
+			
+			total = seconds2time(total_hours / 1000);
+
+			out = '<p>Week Beginning: ' + e.startTime.date + '/' + pad(e.startTime.month -1) + '/' + e.startTime.year + '</p>';
+			out += '<table style="border-collapse: collapse;"><thead style="background: #d3d3d3"><tr><td></td>';
+			for(var j = 1; j < 7; ++j) {
+				out += '<td>' + weekday[j] + '</td>';
+			}
+			out += '<td>' + weekday[0] + '</td>';
+			out += '</tr></thead>';
+
+			out += '<tbody>';
+			for(var j in data){
+				if ((!oneperson) || (oneperson == j)) {
+
+					out += '<tr><td style="background: #d3d3d3">' + j + '</td>';
+
+					for(var k = 1; k < 7; ++k) {
+						if (data[j][weekday[k]]) out += '<td>' + data[j][weekday[k]]['start'] + '</td>';
+						else out+='<td></td>';
+					} 
+					if (data[j]["Sunday"]) out += '<td>' + data[j]["Sunday"]['start'] + '</td>';
+
+					out += '</tr><tr><td style="background: #d3d3d3"></td>';
+					for(var k = 1; k < 7; ++k) {
+						if (data[j][weekday[k]]) out += '<td>' + data[j][weekday[k]]['end'] + '</td>';
+						else out+='<td></td>';
+					} 
+					if (data[j]["Sunday"]) out += '<td>' + data[j]["Sunday"]['end'] + '</td>';
+					out += '</tr>';
+				}
+			}
+			out += '</tbody></table>';
+
+		}
+		return [total, summaryout, out];
+	} 
+
+	gadgets.util.registerOnLoadHandler(function() { 
+		google.calendar.read.subscribeToEvents(subscribeEventsCallback); 
+	});
+
+	function printweek(start, end, who) {
+							google.calendar.read.getEvents(
+								function(r3) {
+									res = prettyCallback(r3, who);
+									  var newWin = window.open('','printWindow','Toolbar=0,Location=0,Directories=0,Status=0,Menubar=0,Scrollbars=0,Resizable=0');
+									  newWin.document.body.innerHTML = res[2];
+								} , '@viewer', start, end);
+		return false;
+	}
+
+	subscribeEventsCallback(null);
+	</script>
+
+	<div id="selected_results" style="display: none">
+
+<div class="btn-group btn-group-sm" role="group" aria-label="..." style="padding-bottom: 5px">
+  <div class="btn-group btn-group-sm" role="group">
+    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      Email
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+	  <li><a href="#" onclick="email(srStart, srEnd)">Selected Range</a></li>
+      <li><a href="#" onclick="email(weekStart, weekEnd)">Selected Week</a></li>
+      <li><a href="#" onclick="email(ppStart, ppEnd)">Selected Pay Period</a></li>
+    </ul>
+  </div>
+  <button type="button" class="btn btn-default" onclick="printweek(weekStart, weekEnd)">Print</button>
+</div>
+
+		<p><b>Selected Range<span class="badge" id="sr_total"></span></b><br/><span id="sr_summary"></span></p>
+		<p><b>Selected Week <span class="badge" id="sw_total"></span></b><br/><span id="sw_summary"></span></p>
+		<p><b>Selected Pay Period <span class="badge" id="sm_total"></span></b><br/><span id="sm_summary"></span></p>
+
+	</div>
+	<div id="unselected_results">
+
+<div class="btn-group btn-group-sm" role="group" aria-label="..." style="padding-bottom: 5px">
+  <div class="btn-group btn-group-sm" role="group">
+    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      Email
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+      <li><a href="#" onclick="email(cStart, cEnd)">Current Day</a></li>
+      <li><a href="#" onclick="email(cweekStart, cweekEnd)">Current Week</a></li>
+      <li><a href="#" onclick="email(cppStart, cppEnd)">Current Pay Period</a></li>
+    </ul>
+  </div>
+  <button type="button" class="btn btn-default" onclick="printweek(cweekStart, cweekEnd)">Print</button>
+</div>
+
+		<p><b>Current Day <span class="badge" id="today_total"></span></b><br/><span id="today_summary"></span></p>
+		<p><b>Current Week <span class="badge" id="week_total"></span></b><br/><span id="week_summary"></span></p>
+		<p><b>Current Pay Period <span class="badge" id="month_total"></span></b><br/><span id="month_summary"></span></p>
+
+	</div><br/><br/>
+	<div style="display: none;color:red">Rota Required!</div>
+	<a href="#" onclick="feedback()" style="float:right">Send Feedback</a>
+</body>
+</html>
+]]>
+</Content>
+</Module>
