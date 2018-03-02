@@ -1,0 +1,46 @@
+.siema {
+	display: none;
+}
+
+#header {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding-bottom: 10px;
+	margin-bottom: 15px;
+}
+
+#logo {
+	padding: 5px;
+}
+
+#header #rightmenu {
+	display: flex;
+	flex-direction: column;
+}
+
+#header #rightmenu .btn {
+	margin: 10px;
+	margin-bottom: 5px;
+	text-align: center;
+	font-size: 1.5em;
+}
+
+#header #rightmenu #email {
+	display: block;
+}
+
+#header #menu {
+	display: none;
+}
+
+.title {
+	display: none;
+}
+
+.panel {
+	background-position: -10px -5px;
+	background-size: 100px 100px;
+	padding-top: 20px;
+	font-size: 0.8em;
+}
