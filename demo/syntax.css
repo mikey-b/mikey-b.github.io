@@ -1,0 +1,75 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@200;400&family=Source+Code+Pro&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu+Mono&display=swap');
+
+html, body { height: 100%; width: 100%; padding: 5px; margin: 0; box-sizing: border-box; background-color: #cdcdcd; }
+
+*, *:before, *:after {
+  box-sizing: inherit;
+  
+}
+
+#tokens {
+	box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+	font-family: 'Source Code Pro', monospace;
+}
+
+#editor { 
+	border-radius: 6px;
+	box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+	border: 2px solid transparent;
+	font-family: 'Ubuntu Mono', monospace;
+	font-size: 14px;
+	height: 100%;
+	letter-spacing: normal;
+	line-height: 18px;
+	padding: 10px;
+	resize: none !important;
+	tab-size: 4;
+	
+	outline: currentcolor none medium; 
+	overflow-wrap: break-word;
+	overflow-y: auto;
+	resize: vertical; 
+	white-space: pre-wrap;
+	width: 100%;
+}
+.codejar-wrap {
+	height: 100%;
+}
+
+.hljs{display:block;overflow-x:auto;padding:.5em;color:#383a42;background:#fafafa}.hljs-comment,.hljs-quote{color:#a0a1a7;font-style:italic}.hljs-doctag,.hljs-keyword,.hljs-formula{color:#a626a4}.hljs-section,.hljs-name,.hljs-selector-tag,.hljs-deletion,.hljs-subst{color:#e45649}.hljs-literal{color:#0184bb}.hljs-string,.hljs-regexp,.hljs-addition,.hljs-attribute,.hljs-meta-string{color:#50a14f}.hljs-built_in,.hljs-class .hljs-title{color:#c18401}.hljs-attr,.hljs-variable,.hljs-template-variable,.hljs-type,.hljs-selector-class,.hljs-selector-attr,.hljs-selector-pseudo,.hljs-number{color:#986801}.hljs-symbol,.hljs-bullet,.hljs-link,.hljs-meta,.hljs-selector-id,.hljs-title{color:#4078f2}.hljs-emphasis{font-style:italic}.hljs-strong{font-weight:bold}.hljs-link{text-decoration:underline}
+
+.Constructor { color: #e82055 }
+.Number { color: #ff7b24 }
+.Comment { background: #ff696130; border: 1px solid #ff696150; border-radius: 2px; padding: 2px; color: red; font-style: italic; font-weight: bold; }
+.String { color: #9c31ff }
+.Selector { color: #44690d }
+.Identifier { color: #698308 }
+.Assignment { color: orange }
+.Begin, .End { color: purple }
+.syntax_error { background: #dd634e40; border: 1px solid #dd634e60; border-radius: 2px }
+.s_error { background: #f8de7e40; border: 1px solid #f8de7e60; border-radius: 2px }
+.Uses, .Var { color: #799FCB; font-weight: bold }
+.Boolean { color: purple }
+
+.c5 { 
+  text-decoration: underline;
+  -webkit-text-decoration-color: red; /* Safari */  
+  text-decoration-color: red;
+}
+
+.Constructor, .Command, .Query, .Return, .If { color: #e82055; }
+.Number, .c6 { color: #ff7b24 }
+.Comment, .c10 { background: #ff696130; border: 1px solid #ff696150; border-radius: 2px; padding: 2px; color: red; font-style: italic; font-weight: bold; }
+.String, .c7 { color: #9c31ff }
+.Selector, .c11 { color: blue; font-wight: bold }
+.c3 { color: #698308 }
+.Assignment, .c2 { color: orange }
+.Begin, .End, .c8, .c9 { color: purple; font-weight: bold }
+.s_error { background: #f8de7e40; border: 1px solid #f8de7e60; border-radius: 2px }
+.Uses, .Var { color: #799FCB; font-weight: bold }
+
+.syntax_error { background: #dd634e40; border: 1px solid #dd634e60; border-radius: 2px }
+
+.c13obj_reference * {  }

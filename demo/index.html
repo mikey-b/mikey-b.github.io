@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Compiler IDE</title>	
+		<script src="parser.js"></script>
+		<link rel='stylesheet' type='text/css' href='syntax.css'/>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+	</head>
+	<body spellcheck="false">
+	<!--
+		<div style="float: right; width: 280px; padding: 10px; height: calc(100% - 20px)">
+			<input type="checkbox" id="payt" checked style="margin-bottom: 10px">
+			<label for="payt"> Enable Parsing as you type</label><br>
+			<select id="tokens" size="20" style="width: 100%; height: 100%"></select>
+		</div>
+	-->
+		<div id="editor" class="hljs" style="float: left;">var balance # This is a comment
+
+constructor new
+begin
+	balance := 0
+	broken_reference_test := "this should fail"
+end
+
+# command test, empty return is AOK
+command deposit: amount
+begin
+	balance += amount
+	declare_anywhere := true
+	return
+end
+
+# command test, must not return a value
+command withdraw: amount
+begin
+	if (balance > amount) begin
+		balance -= amount
+	end
+	return 42
+end
+
+query balance
+begin
+	return balance
+	if (true) begin
+		balance this_is_deadcode
+	end
+end
+
+# query test, all paths must return a value.
+query balance2
+begin
+	if (true) begin
+		return
+	end
+	return balance
+end
+
+# Declaration Test.
+var declare_anywhere</div>
+	</body>
+	<script>
+		let Parser;
+						
+		Module.onRuntimeInitialized = async _ => {
+			Parser = Module.Parser;
+		}
+	</script>
+	<script type="module" async>
+		import {CodeJar} from './codejar/codejar.js'
+		import {withLineNumbers} from './codejar/linenumbers.js';
+
+		const highlight = (editor) => {
+			if (Parser == undefined) return;
+			//if (document.getElementById('payt').checked == false) return;
+			
+			try {
+				document.body.style.backgroundColor = '#cdcdcd';
+				const code = editor.innerText;
+				const c = new Parser(code);
+				const has_errors = c.semantic_check();
+				
+				if (has_errors) {
+					editor.style.borderColor = 'red';
+				} else {
+					editor.style.borderColor = 'transparent';
+				}
+				
+				// Update Token list.
+				//const tokens = c.token_list().split('\n');
+				//document.getElementById('tokens').innerHTML = '<option>' + tokens.join('</option><option>') + '</option>';
+				
+				// Update Editor
+				editor.innerHTML = c.asHTML();
+				//console.log(c.asHTML());
+				c.delete();
+			} catch(e) {
+				console.log("Error! ", e);
+				document.body.style.backgroundColor = 'red';
+			}
+		}
+		
+		let jar = CodeJar(document.querySelector('#editor'), highlight)
+	</script>
+</html>
