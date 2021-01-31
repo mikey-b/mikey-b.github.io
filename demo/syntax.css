@@ -20,7 +20,7 @@ html, body { height: 100%; width: 100%; padding: 5px; margin: 0; box-sizing: bor
 	border: 2px solid transparent;
 	font-family: 'Ubuntu Mono', monospace;
 	font-size: 14px;
-	height: 100%;
+	height: calc(100% - 210px);
 	letter-spacing: normal;
 	line-height: 18px;
 	padding: 10px;

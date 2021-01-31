@@ -3,6 +3,11 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>Compiler IDE</title>	
+		
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+    <script type="text/javascript" src="http://rawgit.com/vitmalina/w2ui/master/dist/w2ui.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="http://rawgit.com/vitmalina/w2ui/master/dist/w2ui.min.css" />		
+		
 		<script src="parser.js"></script>
 		<link rel='stylesheet' type='text/css' href='syntax.css'/>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -58,8 +63,25 @@ begin
 end
 
 # Declaration Test.
-var declare_anywhere</div>
+var declare_anywhere</div><div id="grid" style="width: 100%; height: 200px; padding-top: 5px; border-radius: 6px; box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);"></div>
 	</body>
+	<script type="text/javascript">
+	$(function () {    
+		$('#grid').w2grid({ 
+			name: 'grid', 
+			show: {
+				lineNumbers: true,
+			},
+			columns: [                
+				{ field: 'line', caption: 'Line', size: '50px' },
+				{ field: 'column', caption: 'Column', size: '50px' },
+				{ field: 'msg', caption: 'Error Message' },
+			],
+			records: []
+		});    
+	});
+	</script>	
+	
 	<script>
 		let Parser;
 						
@@ -90,6 +112,16 @@ var declare_anywhere</div>
 				// Update Token list.
 				//const tokens = c.token_list().split('\n');
 				//document.getElementById('tokens').innerHTML = '<option>' + tokens.join('</option><option>') + '</option>';
+				
+				// Update Error List
+				console.log(c.error_list());
+				var error_list = JSON.parse(c.error_list());
+				error_list.pop();
+				
+				w2ui.grid.clear();
+				w2ui.grid.records = error_list;
+				w2ui.grid.total = error_list.length;
+				w2ui.grid.refresh();
 				
 				// Update Editor
 				editor.innerHTML = c.asHTML();
