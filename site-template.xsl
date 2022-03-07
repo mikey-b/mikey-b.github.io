@@ -14,11 +14,16 @@
 			<meta http-equiv="X-UA-Compatible" content="IE=9"/>
 			<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 			<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-			<script src="script.js"></script>
+			<script src="/script.js"></script>
+			
+			<link rel="preconnect" href="https://fonts.googleapis.com"/>
+			<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin"/>
+			<link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono&amp;display=swap" rel="stylesheet"/> 
+			
 			<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" type="text/css"/>
 
-			<link rel="stylesheet" href="css/font-awesome.min.css"/>
-			<link rel="stylesheet" href="style.css"/>
+			<link rel="stylesheet" href="/css/font-awesome.min.css"/>
+			<link rel="stylesheet" href="/style.css"/>
 			
 			<xsl:apply-templates select="node()"/>
 		</xsl:copy>
@@ -37,33 +42,35 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a href="/" class="navbar-brand">
-                <img src="images/logo.png" width="32" style="display: inline-block"/> Mike's Developer Log</a>
+            <a href="/" class="navbar-brand" style="font-family: 'Ubuntu Mono', monospace; font-size: 1.5em">
+                SIGSEGV</a>
         </div>
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ul class="nav navbar-nav navbar-right">
+				<!--
                 <li>
                     <a href="about.xhtml">
                         <i class="fa fa-question"></i>
-                        <span class="icon-label">About</span>
+                        <span class="icon-label"> About</span>
                     </a>
                 </li>
                 <li>
                     <a href="portfolio.xhtml">
                         <i class="fa fa-github"></i>
-                        <span class="icon-label">Portfolio</span>
+                        <span class="icon-label"> Portfolio</span>
                     </a>
                 </li>
+				-->
                 <li>
                     <a href="#">
                         <i class="fa fa-envelope-o"></i>
-                        <span class="icon-label">Contact</span>
+                        <span class="icon-label"> Contact</span>
                     </a>
                 </li>
                 <li>
-                    <a href="archive.xhtml">
+                    <a href="blog.xhtml">
                         <i class="fa fa-th-list"></i>
-                        <span class="icon-label">Archives</span>
+                        <span class="icon-label"> Blog</span>
                     </a>
                 </li>
             </ul>
@@ -84,9 +91,9 @@
       <hr/>
       <div class="row">
          <div class="col-xs-10">
-            &#169; 2003-2016 Mike Brown, All Rights Reserved. <a href="http://validator.w3.org/check?uri=referer">W3C</a>
+            &#169; 2003-2022 Mike Brown, All Rights Reserved. <a href="http://validator.w3.org/check?uri=referer">W3C</a>
          </div>
-         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i><xsl:text> </xsl:text><a href="#">Back to top</a></p></div>
       </div>
    </div>
 </footer>
@@ -98,7 +105,7 @@
 		<xsl:for-each select="document('article-list.xml')/articles/article">
 			<p>
 				<span class="categories-timestamp"><xsl:value-of select="@date"/></span>
-				<span>
+				<span><xsl:text> - </xsl:text>
 				<a><xsl:attribute name="href"><xsl:value-of select="@href"/></xsl:attribute>
 					<xsl:value-of select="@title"/>
 				</a>
@@ -121,13 +128,14 @@
 			    <xsl:for-each select="document('article-list.xml')/articles/article">
 					<a class="list-group-item">
 						<xsl:attribute name="href">/<xsl:value-of select="@href"/></xsl:attribute>
-						<i class="fa fa-arrow-right"></i>
+						<i class="fa fa-arrow-right"></i><xsl:text> </xsl:text>
 						<xsl:value-of select="@title"/><br/><small><xsl:value-of select="@date"/></small></a>
 				</xsl:for-each>
 			</div>
 			</div>
 		</div>
 	</div>
+	
 
         		<div class="col-md-12 text-right">
 					<strong>Share this page: </strong>
