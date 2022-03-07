@@ -68,7 +68,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="blog.xhtml">
+                    <a href="/blog.xhtml">
                         <i class="fa fa-th-list"></i>
                         <span class="icon-label"> Blog</span>
                     </a>
@@ -91,7 +91,7 @@
       <hr/>
       <div class="row">
          <div class="col-xs-10">
-            &#169; 2003-2022 Mike Brown, All Rights Reserved. <a href="http://validator.w3.org/check?uri=referer">W3C</a>
+            &#169; 2003-2022 Mike Brown. <a href="http://validator.w3.org/check?uri=referer">W3C</a>
          </div>
          <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i><xsl:text> </xsl:text><a href="#">Back to top</a></p></div>
       </div>

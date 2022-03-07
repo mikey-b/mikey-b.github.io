@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="/site-template.xsl" media="screen"?>
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta charset="utf-8"/>
+	<title>Correctness</title>
+</head>
+
+<body>
+<br/>
+<a href="/">Index</a> > <a href="concepts.xhtml">Concepts and Semantics</a><span> > </span>
+<h1>Correctness</h1>
+<p class="has-line-data" data-line-start="0" data-line-end="2"><h2>Introduction</h2>
+<p>As part of the <a href="concepts.xhtml">Concepts and Semantics</a> section, this document is an overview on how this programming language conceptually precives error handling and program correctness. It is designed to help give a high level understanding of one of the guiding principles - why particular language design choices have been made.</p>
+
+<p>This document introduces the concepts of: Required Correctness, Validation Checks, Code Contracts (Preconditions, Postconditions, Class Invariants, and Assertions), Normal and Abnormal Behaviour, Acceptance Tests, Unit Tests, and Exceptions.</p>
+
+<p>If you are not concerned with the <i>whys</i> of these concepts, and more interested in the <i>hows</i>. You might want to skip this and go to the <a href="usage.xhtml">Usage and Syntax</a> section.</p>
+
+</p>
+
+<p class="has-line-data" data-line-start="3" data-line-end="4"><h2>What Is Correctness?</h2>It's going to be useful to quickly cover what exactly correctness is. While its been a topic of interest since the dawn of computing, the best arguably came from the works in the 70s in terms of research, focus and popularizing ideas that bought correctness front and centre.</p>
+<blockquote>
+<p class="has-line-data" data-line-start="5" data-line-end="7">Program testing can be used to show the presence of bugs, but never to show their absence!</p>
+</blockquote>
+<p class="has-line-data" data-line-start="8" data-line-end="9">These words still echo in the minds of programmers today - So much so that defining “Correctness”, in my opinion, must refer to this decade and its body of work.</p>
+<p class="has-line-data" data-line-start="10" data-line-end="12"><b>The Humble Programmer</b><br/>
+The much cited quote above originates from Dijkstra’s Turing Award Lecture 1972, titled The Humble Programmer.</p>
+<p class="has-line-data" data-line-start="13" data-line-end="14">This is important because Dijkstra believed that all programs should be accompanied by a proof of its correctness. The Humble Programmer paper continues by explaining that he believed that in the future, there would be no need for testing.</p>
+<p class="has-line-data" data-line-start="15" data-line-end="17"><h2>Absolute Correctness</h2>
+Dijkstra correctly uses the term Correctness, but its going to be useful to distinguish Dijsktra's usage with a more modern variant of correctness later on. Lets define this kind of correctness as Absolute Correctness. The idea is indeed enticing. By providing a proof, we can have 100% certainty (a guarantee) that the program will behave as intended at all times.</p>
+<p class="has-line-data" data-line-start="18" data-line-end="19">There are still researchers pursuing this idea, however two big problems appeared that have effectively killed this idea.</p>
+<p class="has-line-data" data-line-start="20" data-line-end="22"><strong>General proofs are hard</strong><br/>
+It is advantageous to program in a generic and flexible way. General proofs - just as in math - are extremely hard to create, or even impossible. It is far easier to create specific proofs -this works against other productive programming habits.</p>
+<p class="has-line-data" data-line-start="23" data-line-end="25"><strong>We don’t know 100% intention</strong><br/>
+Code changes, a lot. This again works against providing proofs as it’s unlikely we fully know what the absolute intention is to start with. Along with continuous change, we have to attempt to maintain those proofs for them to be useful.</p>
+<p class="has-line-data" data-line-start="26" data-line-end="28"><h2>Required Correctness</h2>
+I do not believe that Absolute Correctness for the systems we produce today is possible. What has emerged in helping provide the best correctness we can is what I call Required Correctness. There are two cornerstone ideas; Testing, and Contracts.</p>
+<p class="has-line-data" data-line-start="29" data-line-end="30">Before we dive into these topics, it is important to note that Testing and Contracts are actually two perspectives on the same problem (which I call Required Correctness). A test is a specific input to a given method (or set of methods), demanding a specific result. While Contracts narrow a range of inputs to a range of outputs. A test is inward facing (It should not have knowledge of the internal workings of a given method), while a Contract is outward facing (Preconditions, Postconditions, and Assertions will have knowledge of the internal workings of a method).</p>
+<p class="has-line-data" data-line-start="31" data-line-end="33"><h3>Acceptance Testing</h3>
+The best way to treat testing is to remind ourselves that as software engineers, we’re providing software for some end-user/customer. When an end-user <strong>requires</strong> a particular behaviour from the system - We should be meeting that requirement and verifying that it does indeed behave as expressed to use.</p>
+<p class="has-line-data" data-line-start="34" data-line-end="35">This is acceptance testing. We should be absolutely recording, and automating these tests - So we can provide a report to the user as verification of our work. Its also quite common for software engineers to struggle making tests. These tests are <em>only</em> required behaviour from the end-user. You should not be making these tests up or out of thin air.</p>
+<p class="has-line-data" data-line-start="36" data-line-end="38"><h3>Unit Testing</h3>
+Recall that tests are inward facing. A unit test is also an acceptance test, but specified from a lower layer to the layer that the end-user interacts with. It still specifies a specific input and a specific expected output. It is complementry to the Contracts that also cover the systems code base.</p>
+<p class="has-line-data" data-line-start="39" data-line-end="40">I do not believe that unit tests should “100% cover” a code base, and the advice that tests should be for a specific <em>important</em> requirement of the system - the same advice given in acceptance testing - is also true for unit testing.</p>
+<p class="has-line-data" data-line-start="41" data-line-end="42">While tests can not find all bugs - A useful property of tests is that they execute at Integration Check time - and not at runtime.</p>
+<p class="has-line-data" data-line-start="43" data-line-end="45"><h3>Contracts</h3>
+With required correctness, we’re unable to guarentee that the system always performs expected behaviour (called Normal Behaviour). The possibility of Abnormal Behaviour is always present in a system.</p>
+<p class="has-line-data" data-line-start="46" data-line-end="47">What this means is that we need to provide checkpoints that check if the current execution is within the Normal Behaviour range. We have four tools to express these checkpoints.</p>
+
+<table class="table table-striped table-bordered">
+<caption style="width: 100%">Tools to define / detect Abnormal Behaviour</caption>
+<thead>
+<tr>
+<th style="text-align:left">Tool</th>
+<th style="text-align:left">When to use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Preconditions</strong> - are assertions denoted in the header of a method that specifies the valid inputs (their ranges).</td>
+<td style="text-align:left">They allow you to specify a partial function.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Postconditions</strong> - are assertions that check the state changes made are the expected results of the given method.</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Class Invariants</strong> - specify the valid range of values that a given class can hold.</td>
+<td style="text-align:left">When you need to constrain/narrow the range of values of a product type.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Assertions</strong> - An assertion is an instruction inside a method that checks for a given condition.</td>
+<td style="text-align:left">When a condition has to be true to continue processing. A failing condition means you can not meet the postcondition - acting as an early exit.</td>
+</tr>
+</tbody>
+</table>
+<p class="has-line-data" data-line-start="55" data-line-end="56">If any of these conditions are not held, an exception is raised.</p>
+<p class="has-line-data" data-line-start="57" data-line-end="59"><h4>Exceptions</h4>
+When Abnormal Behaviour is detected, an exception is raised. An exception is a runtime signal telling the system that abnormal behaviour has been encountered.</p>
+<p class="has-line-data" data-line-start="60" data-line-end="61">The primary reason for this signal is to <strong>return the system back to a valid state.</strong> Exiting a method before competition can leave parital state changes due to instructions prior to the failure - and the system in an invalid state.</p>
+<p class="has-line-data" data-line-start="62" data-line-end="63">This signal propagates up the call stack (Other methods that will be effected by this failure), and reverses any state changes. You can consider this similiarly to “cancelling a transaction”.</p>
+
+<h4>Exception Misconceptions</h4>
+<p class="has-line-data" data-line-start="69" data-line-end="70"><b>Exceptions should be "rare"</b> - Exceptions are commonly explained with emphasis on infrequency of that given event. E.g. Exceptions should be exceptional. While technically true, and it is certainly a goal to lower the number of possible exceptions. It is better to define exceptions as <i>Exception to the rules</i> - Those rules is your normal behaviour code. An "exception" is an event/result not handled by the logic you programmed.</p>
+<p class="has-line-data" data-line-start="69" data-line-end="70"><b>Exceptions as faster code paths</b> - I've seen comments with regards to using exception mechanisms to program hot vs cold control paths - A “cheap” branching instruction that only occurs for cold paths. If this is truly useful, this will be a compiler optimisation only and will apply to all branching statements where it would be beneficial. In my opinion, it is crazy to be using additional keywords and behaviour for such tasks.</p>
+
+<p class="has-line-data" data-line-start="64" data-line-end="66"><h3>Validation Checks</h3>
+<center><b><i>Favour Validation over Exception Handling</i></b></center><br/>
+Unlike other languages, you can not “catch” an exception. This is to keep a clear and simple division between Normal and Abnormal code. A method can <em>only</em> have normal behaviour code in its body.</p>
+
+<p class="has-line-data" data-line-start="71" data-line-end="72">When an exception occurs, there are two solutions. Either the internal behaviour of the callee is incorrect, and must be adjusted. Or the caller has given invalid inputs - in this case the programmer needs to insert checks in the caller. These checks are called Validation checks:</p>
+
+<table id="tbl1">
+<style>
+	#tbl1 { width: 100%; }
+	#tbl1 th { width: 50% }
+	#tbl1 tr { vertical-align: top }
+	#tbl1 td { padding: 5px; }
+	#tbl1 pre { width: 100%; height: 220px }
+</style>
+<thead>
+	<tr>
+		<th>Do this</th>
+		<th>Not this</th>
+	</tr>
+</thead>
+<tr>
+	<td>
+<pre><code class="has-line-data language-c++" data-line-start="75" data-line-end="86"><span class="hljs-keyword">auto</span> operator/(<span class="hljs-keyword">auto</span> divisor) { 
+    assert(divisor &gt; <span class="hljs-number">0</span>, <span class="hljs-string">"Division By Zero"</span>);
+    ...
+}
+
+<span class="hljs-keyword">if</span> (z &gt; <span class="hljs-number">0</span>) { <span class="hljs-comment">// Validation Check</span>
+    y = x / z;
+} <span class="hljs-keyword">else</span> {
+  <span class="hljs-comment">//...Divison By Zero</span>
+}
+</code></pre>	
+	</td>
+	<td>
+<pre><code class="has-line-data language-c++" data-line-start="89" data-line-end="95"><span class="hljs-keyword">try</span> {
+  y = x / z;
+} <span class="hljs-keyword">catch</span> {
+  <span class="hljs-comment">//...Divison By Zero</span>
+}
+</code></pre>	
+	</td>
+</tr>
+</table>
+
+<p class="has-line-data" data-line-start="96" data-line-end="98">
+My general advice on validation checks:</p>
+<ul>
+<li class="has-line-data" data-line-start="98" data-line-end="99">Have your validation checks as early (as high up the call stack) as possible.</li>
+<li class="has-line-data" data-line-start="99" data-line-end="101">Do not insert a validation check unless you’re able to handle the invalid path. This was the primary reason for not using the <code>throw</code> keyword. All code contract tools require a condition (A predicate). Validate higher, so you can handle the invalid path too.</li>
+</ul>
+
+<p class="has-line-data" data-line-start="96" data-line-end="98"><h3>Enforced Validation Checks</h3>
+It is possible to statically enforce certain validation checks. One example of this that is in the language is Void Safety. This checks that a given optional member variable holds either a value, or is empty. A static analysis phase checks that all usages of optional's are always enclosed in a validation check that confirms that the value is not empty.
+</p>
+
+<p class="has-line-data" data-line-start="101" data-line-end="103"><h3>Future Direction - Model Checking</h3>
+Exceptions occur at runtime - This is not ideal and it would be benefical to have some reporting or checking of these verification checks and possible raised exceptions before runtime. e.g. at Integration Check time, along with tests.</p>
+<p class="has-line-data" data-line-start="104" data-line-end="105">The next stage in this languages development will be using these validation checks and utilising model checking to prove if a given exception can or can not occur at runtime. A report of the unproven and exceptions would be of great use in the fight for correctness.</p>
+<p class="has-line-data" data-line-start="106" data-line-end="107">This tooling would greatly assist with managing exceptions - allowing us to review the correctness and safety of our systems.</p>
+
+<p>
+<p>Please see the Further Reading section at the end for information on implementation and usage details.</p>
+<h3>Further Reading</h3>
+<ul>
+	<li>Usage and Syntax > Code Contracts</li>
+	<li>Usage and Syntax > Optional > Void Safety</li>
+	<li>Usage and Syntax > Automatic Exception Handling</li>
+	<li>Integration Checks > Exceptions Report</li>
+</ul>
+</p>
+
+</body></html>
