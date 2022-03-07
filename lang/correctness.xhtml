@@ -142,6 +142,22 @@ My general advice on validation checks:</p>
 It is possible to statically enforce certain validation checks. One example of this that is in the language is Void Safety. This checks that a given optional member variable holds either a value, or is empty. A static analysis phase checks that all usages of optional's are always enclosed in a validation check that confirms that the value is not empty.
 </p>
 
+<p class="has-line-data" data-line-start="101" data-line-end="103"><h3>Future Direction - Merging Validation and Methods</h3>
+The language already enforces a seperation between Command Methods (Methods that perform an observable state change), and Query Methods (Methods that return a result). It is clear that it would be benefical to combine these where possible at the optimisation stage. This would remove redundant computations when a verification check does the same or similar computation as performing the computation itself. 
+</p><p>One example of this is returning an element from a collection. Some languages allow an optional to be returned as a result. This combines the validation check and the result of the action. Currently a validation check would require:</p>
+
+<p>
+<pre><code class="has-line-data language-c++" data-line-start="75" data-line-end="86"><span class="hljs-keyword">if</span> (Collection hasElement: name) { <span class="hljs-comment">// Validation Check</span>
+    result := Collection getElement: name
+	// ...
+} <span class="hljs-keyword">else</span> {
+  <span class="hljs-comment">//...Element not found</span>
+}
+</code></pre>	
+</p>
+
+<p>Currently, Optional variables are only allowed at the class level (Optional Member Variables). They are not permitted as operands to a method, as return results, or as local variables within the method body. This enables useful guarentees (discussed in more detail in Usage and Synax), to strengthen the practises of validation checks, and to not allow optionals to leave the current scope to where they can effectively be handled. I would prefer to investigate the merging of checks and actions before weakening these guarentees by introducing Optional types as a general language feature.</p>
+
 <p class="has-line-data" data-line-start="101" data-line-end="103"><h3>Future Direction - Model Checking</h3>
 Exceptions occur at runtime - This is not ideal and it would be benefical to have some reporting or checking of these verification checks and possible raised exceptions before runtime. e.g. at Integration Check time, along with tests.</p>
 <p class="has-line-data" data-line-start="104" data-line-end="105">The next stage in this languages development will be using these validation checks and utilising model checking to prove if a given exception can or can not occur at runtime. A report of the unproven and exceptions would be of great use in the fight for correctness.</p>
