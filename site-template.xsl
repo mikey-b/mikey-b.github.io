@@ -60,13 +60,14 @@
                         <span class="icon-label"> Portfolio</span>
                     </a>
                 </li>
-				-->
+				
                 <li>
                     <a href="#">
                         <i class="fa fa-envelope-o"></i>
                         <span class="icon-label"> Contact</span>
                     </a>
                 </li>
+				-->
                 <li>
                     <a href="/blog.xhtml">
                         <i class="fa fa-th-list"></i>
