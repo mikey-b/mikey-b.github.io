@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8"/>
+		<title>Plang IDE</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<link rel="icon" type="image/png" href="/icon.png" />
+		<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@200;400&family=Source+Code+Pro&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu+Mono&display=swap');		
+		
+html, body { height: 100%; width: 100%; padding: 5px; margin: 0; box-sizing: border-box; background-color: #cdcdcd; }
+
+*, *:before, *:after {
+  box-sizing: inherit;
+  
+}
+		
+#source { 
+	background: white;
+	border-radius: 6px;
+	box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+	border: 2px solid transparent;
+	font-family: 'Inconsolata', monospace;
+	font-size: 14px;
+	height: calc(100% - 210px);
+	letter-spacing: normal;
+	line-height: 18px;
+	padding: 10px;
+	resize: none !important;
+	tab-size: 4;
+	
+	outline: currentcolor none medium; 
+	overflow-wrap: break-word;
+	overflow-y: auto;
+	resize: vertical; 
+	white-space: pre-wrap;
+}
+
+#source .Comment { background: #ff696130; border: 1px solid #ff696150; border-radius: 2px; padding: 2px; color: red; font-style: italic; font-weight: bold; }
+		
+#source .method { }
+
+#source .Selector { color: #44690d }
+#source .Identifier { color: #e82055 }
+
+#source .Using, #source .Var { color: #799FCB; font-weight: bold }
+
+#source .Boolean { color: purple }		
+#source .Number { color: purple; }
+
+#source .String { color: #9c31ff }
+#source .Operator { color: orange }
+
+#source .Constructor, #source .Command, #source .Query, #source .Return, #source .If, #source .Begin, #source .End { font-weight: bold; color: #698308; }
+
+#source .error { background: #dd634e40; border: 1px solid #dd634e60; border-radius: 2px }
+#source .err { background: #f8de7e40; border: 1px solid #f8de7e60; border-radius: 2px }
+
+		
+			#source { height: 300px; width: 100% }
+
+		</style>
+	</head>
+	<body>
+		<div id="source" contenteditable="true"></div><br/>
+	</body>
+	<script>
+// Credit to Liam (Stack Overflow)
+// https://stackoverflow.com/a/41034697/3480193
+class Cursor {
+    static getCurrentCursorPosition(parentElement) {
+        var selection = window.getSelection(),
+            charCount = -1,
+            node;
+        
+        if (selection.focusNode) {
+            if (Cursor._isChildOf(selection.focusNode, parentElement)) {
+                node = selection.focusNode; 
+                charCount = selection.focusOffset;
+                
+                while (node) {
+                    if (node === parentElement) {
+                        break;
+                    }
+
+                    if (node.previousSibling) {
+                        node = node.previousSibling;
+                        charCount += node.textContent.length;
+                    } else {
+                        node = node.parentNode;
+                        if (node === null) {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        
+        return charCount;
+    }
+    
+    static setCurrentCursorPosition(chars, element) {
+        if (chars >= 0) {
+            var selection = window.getSelection();
+            
+            let range = Cursor._createRange(element, { count: chars });
+
+            if (range) {
+                range.collapse(false);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+        }
+    }
+    
+    static _createRange(node, chars, range) {
+        if (!range) {
+            range = document.createRange()
+            range.selectNode(node);
+            range.setStart(node, 0);
+        }
+
+        if (chars.count === 0) {
+            range.setEnd(node, chars.count);
+        } else if (node && chars.count >0) {
+            if (node.nodeType === Node.TEXT_NODE) {
+                if (node.textContent.length < chars.count) {
+                    chars.count -= node.textContent.length;
+                } else {
+                    range.setEnd(node, chars.count);
+                    chars.count = 0;
+                }
+            } else {
+                for (var lp = 0; lp < node.childNodes.length; lp++) {
+                    range = Cursor._createRange(node.childNodes[lp], chars, range);
+
+                    if (chars.count === 0) {
+                    break;
+                    }
+                }
+            }
+        } 
+
+        return range;
+    }
+    
+    static _isChildOf(node, parentElement) {
+        while (node !== null) {
+            if (node === parentElement) {
+                return true;
+            }
+            node = node.parentNode;
+        }
+
+        return false;
+    }
+}
+	
+	const token_type = {
+		Eof: 'EOF',
+		Identifier: 'Identifier',
+		UsingKeyword: 'Using',
+		VarKeyword: 'Var',
+		OptionalKeyword: 'Optional',
+		Number: 'Number',
+		Newline: 'Newline',
+		Unknown: 'Unknown',
+		EndKeyword: 'End',
+		ConstructorKeyword: 'Constructor',
+		CommandKeyword: 'Command',
+		QueryKeyword: 'Query',
+		EqualSign: 'EqualSign',
+		PlusSign: 'PlusSign',
+		MinusSign: 'MinusSign',
+		LParen: 'LParen',
+		RParen: 'RParen',
+	};
+	
+	class token {
+		constructor(type, ws, lexeme) {
+			this.type = type;
+			this.ws = ws;
+			this.lexeme = lexeme;
+		}
+		
+		asHTML() {
+			if (this.type == token_type.Eof) {
+				let result = "";
+				if (this.ws) result += "<span>" + this.ws + "</span>";
+				return result + "<span></span>";
+			} else if (this.type == token_type.Newline) {
+				return "<span>" + this.ws + "</span>\n";
+			}
+			
+			return "<span>" + this.ws + "</span><span class='" + this.type + "'>" + this.lexeme + "</span>";
+		}
+	}
+	
+	function isAlpha(char) {
+		return ( (char >= 'A' &&  char <= 'Z') ||
+				 (char >= 'a' &&  char <= 'z') );
+	}
+
+	function isAlphaDigit(char) {
+		return ( (char >= 'A' &&  char <= 'Z') ||
+				 (char >= 'a' &&  char <= 'z') || 
+				 (char >= '0' &&  char <= '9')
+			);
+	}
+
+	function isDigit(char) {
+		return ( (char >= '0' &&  char <= '9') );
+	}
+	
+	class lexer {
+		constructor(source) {
+			this.source = source;
+			this.cp = 0;
+			this.ep = source.length;
+			this.advance();
+		}
+		
+		advance() {
+			const ws = this.cp;
+			
+			while(this.source[this.cp] == ' ') {
+				this.cp += 1;
+			}
+			
+			if (this.cp == this.ep) {
+				this.front = new token(token_type.Eof, this.source.substring(ws, this.cp), "");
+				return;
+			}
+			
+			//console.log(this.source[this.cp]);
+			
+			switch(this.source[this.cp]) {
+				// Identifier
+				case 'a': case 'b': case 'c': case 'd': case 'e': case 'f': case 'g': case 'h': case 'i': case 'j': case 'k': case 'l': case 'm': case 'n': case 'o': case 'p': case 'q': case 'r': case 's': case 't': case 'u': case 'v': case 'w': case 'x': case 'y': case 'z':
+				case 'A': case 'B': case 'C': case 'D': case 'E': case 'F': case 'G': case 'H': case 'I': case 'J': case 'K': case 'L': case 'M': case 'N': case 'O': case 'P': case 'Q': case 'R': case 'S': case 'T': case 'U': case 'V': case 'W': case 'X': case 'Y': case 'Z':	{
+					const start = this.cp;
+					
+					while(isAlphaDigit(this.source[this.cp])) {
+						this.cp+=1;
+					}
+					
+					let ttype = token_type.Identifier;
+					const t = this.source.substring(start, this.cp);
+					if (t == "var") ttype = token_type.VarKeyword;
+					else if (t == "constructor") ttype = token_type.ConstructorKeyword;
+					else if (t == "end") ttype = token_type.EndKeyword;
+					else if (t == "using") ttype = token_type.UsingKeyword;
+					
+					this.front = new token(ttype, this.source.substring(ws, start), t);
+					break;
+				}
+				case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9': {
+					const start = this.cp;
+					
+					while(isDigit(this.source[this.cp])) {
+						this.cp+=1;
+					}
+					
+					this.front = new token(token_type.Number, this.source.substring(ws, start), this.source.substring(start, this.cp));
+					break;
+				}
+				case '\n': { // Newline
+					//console.log("newline");
+					this.front = new token(token_type.Newline, this.source.substring(ws, this.cp), this.source.substring(this.cp, this.cp+1));
+					this.cp+=1;
+					break;
+				}
+				case '+': {
+					this.front = new token(token_type.PlusSign, this.source.substring(ws, this.cp), this.source.substring(this.cp, this.cp+1));
+					this.cp+=1;
+					break; 
+				}
+				case '-': {
+					this.front = new token(token_type.MinusSign, this.source.substring(ws, this.cp), this.source.substring(this.cp, this.cp+1));
+					this.cp+=1;
+					break; 
+				}					
+				case '=': {
+					this.front = new token(token_type.EqualSign, this.source.substring(ws, this.cp), this.source.substring(this.cp, this.cp+1));
+					this.cp+=1;
+					break; 
+				}
+				case '(': {
+					this.front = new token(token_type.LParen, this.source.substring(ws, this.cp), this.source.substring(this.cp, this.cp+1));
+					this.cp+=1;
+					break; 
+				}
+				case ')': {
+					this.front = new token(token_type.RParen, this.source.substring(ws, this.cp), this.source.substring(this.cp, this.cp+1));
+					this.cp+=1;
+					break; 
+				}			
+				default: {
+					this.front = new token( token_type.Unknown, this.source.substring(ws, this.cp), this.source.substring(this.cp, this.cp+1));
+					this.cp+=1;
+					return;
+				}
+			}
+		}
+	}
+	
+	class topLevelError {
+		constructor(lex) {
+			this.children = [];
+			
+			console.assert((lex.front.type != token_type.VarKeyword) && (lex.front.type != token_type.Eof));
+			
+			while(
+				(lex.front.type != token_type.Eof) &&
+				(lex.front.type != token_type.VarKeyword) && 
+				(lex.front.type != token_type.ConstructorKeyword)
+			) {
+				this.children.push(lex.front);
+				lex.advance();
+			}
+		}
+
+		asHTML() {
+			let result = "<span class='error' title='Invalid Top Level Declaration'>";
+			for(let c of this.children) {
+				result += c.asHTML();
+			}
+			result += "</span>";
+			return result;
+		}
+	}
+	
+	class invalidInstruction {
+		constructor(lex) {
+			this.children = [];
+			
+			while(
+				(lex.front.type != token_type.Eof) &&
+				(lex.front.type != token_type.EndKeyword) &&
+				(lex.front.type != token_type.Newline)
+			) {
+				this.children.push(lex.front);
+				lex.advance();
+			}
+		}
+		
+		asHTML() {
+			let result = "<span class='ins error' title='Invalid instruction'>";
+			for(let c of this.children) {
+				result += c.asHTML();
+			}
+			result += "</span>";
+			return result;
+		}
+	}
+	
+	class number_literal {
+		constructor(lex) {
+			console.assert(lex.front.type == token_type.Number);
+			this.value = lex.front;
+			lex.advance();
+			
+		}
+		
+		asHTML() {
+			return "<span class='Number_Literal'>" + this.value.asHTML() + "</span>";
+		}	
+	}
+	
+	class obj_ref {
+		constructor(lex) {
+			console.assert(lex.front.type == token_type.Identifier);
+			this.value = lex.front;
+			lex.advance();
+		}
+		
+		asHTML() {
+			return "<span class='ObjRef'>" + this.value.asHTML() + "</span>";
+		}	
+	}	
+	
+	class sub_expression {
+		constructor(lex) {
+			this.hasError = false;
+			this.children = [];
+			
+			console.assert(lex.front.type == token_type.LParen);
+			this.children.push( lex.front );
+			lex.advance();
+			
+			if(is_expression(lex)) {
+				this.e_body = expression_factory(lex);
+				this.children.push(this.e_body);
+			} else {
+				this.hasError = true;
+			}
+			
+			if (lex.front.type == token_type.RParen) {
+				this.children.push( lex.front );
+				lex.advance();						
+			} else {
+				this.hasError = true;
+			}
+		}
+		
+		asHTML() {
+			let result = "";
+			if (this.hasError == true) {
+				result = "<span class='SubExpr err' title='Incomplete Sub Expression'>" 
+			} else {
+				result = "<span class='SubExpr'>"
+			}
+			
+			for(let c of this.children) {
+				result += c.asHTML();
+			}			
+			
+			result += "</span>";
+			return result;
+		}		
+	}
+	
+	class infix_expression {
+		constructor(lex, lhs, min_bp) {
+			this.hasError = false;
+		
+			this.lhs = lhs;
+			
+			// console.assert() - we can't get here without it being an operator. TODO might as well assert though?
+			this.op = lex.front;
+			lex.advance();
+			
+			if (is_expression(lex)) {			
+				this.rhs = expression_factory(lex, min_bp);
+			} else {
+				this.hasError = true;
+			}
+		}
+		
+		asHTML() {
+			if (this.hasError == true) {
+				return "<span class='err' title='Incomplete Infix Expression'>" + this.lhs.asHTML() + "<span class='Operator'>" + this.op.asHTML() + "</span></span>";
+			} else {
+				return "<span>" + this.lhs.asHTML() + "<span class='Operator'>" + this.op.asHTML() + "</span><span>" + this.rhs.asHTML() + "</span></span>";
+			}
+		}
+	}
+	
+	function is_expression(lex) {
+		return ((lex.front.type == token_type.Number) || (lex.front.type == token_type.LParen) || (lex.front.type == token_type.Identifier));
+	}
+	
+	function expression_factory(lex, right_bp = 0) {
+		const bp_lookup = (t) => {
+			const LeftAssociative = (p) => {
+				return {left_power: p - 1, right_power: p};
+			}
+		
+			const RightAssociative = (p) => {
+				return {left_power: p + 1, right_power: p};
+			}
+		
+			switch(t) {
+				case token_type.PlusSign: return LeftAssociative(100);
+				case token_type.MinusSign: return LeftAssociative(100);
+				//case token_type.StarSign: return LeftAssociative(200);
+				//case token_type.DivideSign: return LeftAssociative(200);
+				//case token_type.PowSign: return RightAssociative(99);
+				//case token_type.TernaryStart: return RightAssociative(1000);
+
+				//case token_type.GreaterThan: return LeftAssociative(50);
+				//case token_type.EqualOrGreaterThan: return LeftAssociative(50);
+				//case token_type.LessThan: return LeftAssociative(50);
+				//case token_type.EqualOrLessThan: return LeftAssociative(50);
+				case token_type.EqualSign: return LeftAssociative(50);
+				//case token_type.NotEqualSign: return LeftAssociative(50);
+
+				// Postfix is always Right Associative
+				//case token_type.BangSign: return RightAssociative(400);
+				default: return {left_power: 0, right_power: 0};
+			}
+		}
+	
+		let result = null;
+		
+		if (lex.front.type == token_type.Number) {
+			result = new number_literal(lex);
+		} else if (lex.front.type == token_type.LParen) {
+			result = new sub_expression(lex);
+		} else if (lex.front.type == token_type.Identifier) {
+			result = new obj_ref(lex);
+		}
+		
+		while (right_bp < bp_lookup(lex.front.type).left_power) {
+			result = new infix_expression(lex, result, bp_lookup(lex.front.type).right_power);
+		}
+		
+		console.assert(result != null);
+		return result;
+	}
+	
+	class varDecl {
+		constructor(lex) {
+			this.children = [];
+			this.hasError = false;
+			
+			console.assert(lex.front.type == token_type.VarKeyword);
+			this.children.push(lex.front);
+			lex.advance();
+			
+			if (lex.front.type != token_type.Identifier) {
+				this.hasError = true;
+				while((lex.front.type != token_type.Newline) && (lex.front.type != token_type.Eof)) {
+					this.children.push(lex.front);
+					lex.advance();
+				}
+			}
+			this.children.push(lex.front);
+			lex.advance();
+		}
+
+		asHTML() {
+			let result = "<span ";
+			if (this.hasError === true) {
+				result += "class='decl var err' title='Partial Var Declaration'>";
+			} else {
+				result += "class='decl'>";
+			}
+			for(let c of this.children) {
+				result += c.asHTML();
+			}
+			result += "</span>";
+			return result;
+		}	
+	}
+	
+	class usingDecl {
+		constructor(lex) {
+			this.children = [];
+			this.hasError = false;
+			
+			console.assert(lex.front.type == token_type.UsingKeyword);
+			this.children.push(lex.front);
+			lex.advance();
+			
+			if (lex.front.type != token_type.Identifier) {
+				this.hasError = true;
+				while((lex.front.type != token_type.Newline) && (lex.front.type != token_type.Eof)) {
+					this.children.push(lex.front);
+					lex.advance();
+				}
+			}
+			this.children.push(lex.front);
+			lex.advance();
+		}
+
+		asHTML() {
+			let result = "<span ";
+			if (this.hasError === true) {
+				result += "class='decl using err' title='Partial Using Declaration'>";
+			} else {
+				result += "class='decl using'>";
+			}
+			for(let c of this.children) {
+				result += c.asHTML();
+			}
+			result += "</span>";
+			return result;
+		}	
+	}	
+	
+	class codeBlock {
+		constructor(lex) {
+			this.children = [];
+			
+			while((lex.front.type != token_type.EndKeyword) && (lex.front.type != token_type.Eof)) {
+				switch(lex.front.type) {
+					case token_type.Newline: {
+						// blank line
+						this.children.push(lex.front);
+						lex.advance();
+						break;
+					}
+					case token_type.VarKeyword: {
+						this.children.push(new varDecl(lex));
+						break;
+					}
+					case token_type.Number: case token_type.LParen: case token_type.Identifier: {
+						this.children.push(expression_factory(lex));
+						break;
+					}					
+					default: {
+						this.children.push(new invalidInstruction(lex));
+					}
+				}
+			}
+			
+		}
+		
+		asHTML() {
+			let result = "<span class='codeblock'>";
+
+			for(let c of this.children) {
+				result += c.asHTML();
+			}
+			result += "</span>";
+			return result;
+		}	
+	}
+	
+	class constructorDecl {
+		constructor(lex) {
+			this.children = [];
+			this.hasError = false;
+			
+			console.assert(lex.front.type == token_type.ConstructorKeyword);
+			this.children.push(lex.front);
+			lex.advance();
+			
+			if (lex.front.type != token_type.Identifier) {
+				this.hasError = true;
+				while((lex.front.type != token_type.Newline) && (lex.front.type != token_type.Eof)) {
+					this.children.push(lex.front);
+					lex.advance();
+				}
+			} else {
+				this.children.push(lex.front);
+				lex.advance();
+			}
+
+			if (lex.front.type != token_type.Newline) {
+				this.hasError = true;
+				while((lex.front.type != token_type.Newline) && (lex.front.type != token_type.EndKeyword) && (lex.front.type != token_type.Eof)) {
+					this.children.push(lex.front);
+					lex.advance();
+				}
+			} else {
+				this.children.push(lex.front);
+				lex.advance();
+			}
+			
+			this.children.push(new codeBlock(lex));
+			
+			if (lex.front.type != token_type.EndKeyword) {
+				this.hasError = true;
+				while((lex.front.type != token_type.EndKeyword) && (lex.front.type != token_type.Eof)) {
+					this.children.push(lex.front);
+					lex.advance();
+				}
+			}
+			
+			if (lex.front.type == token_type.EndKeyword) {
+				this.children.push(lex.front);
+				lex.advance();
+			}
+		}
+
+		asHTML() {
+			let result = "<span ";
+			if (this.hasError === true) {
+				result += "class='method err' title='Partial Constructor Declaration'>";
+			} else {
+				result += "class='method'>";
+			}
+			for(let c of this.children) {
+				result += c.asHTML();
+			}
+			result += "</span>";
+			return result;
+		}		
+	}
+	
+	class lang_parse {
+		constructor(source) {
+			let lex = new lexer(source);
+			
+			this.children = [];
+		
+			while(lex.front.type != token_type.Eof) {
+				switch(lex.front.type) {
+					case token_type.VarKeyword: {
+						this.children.push(new varDecl(lex));
+						break;
+					}
+					case token_type.UsingKeyword: {
+						this.children.push(new usingDecl(lex));
+						break;					
+					}
+					case token_type.ConstructorKeyword: {
+						this.children.push(new constructorDecl(lex));
+						break;
+					}
+					case token_type.Newline: {
+						this.children.push(lex.front);
+						lex.advance();
+						break;
+					}
+					default: {
+						this.children.push(new topLevelError(lex));
+					}
+				}
+			}
+			
+			console.assert(lex.front.type == token_type.Eof);
+			this.children.push(lex.front);
+		}
+		
+		asHTML() {
+			let result = "";
+			for(let c of this.children) {
+				result += c.asHTML();
+			}
+			return result;
+		}
+	}
+	
+	function parse() {
+		const s = document.getElementById('source');
+		let offset = Cursor.getCurrentCursorPosition(s);
+		//console.log(offset);
+		const src = s.innerText;
+		const p = new lang_parse(src);
+		const html = p.asHTML();
+		console.log(html);
+		s.innerHTML = html;
+		Cursor.setCurrentCursorPosition(offset, s);
+		//s.focus();
+		console.log(k);
+	}
+	
+	
+	class Klass {
+		constructor() {
+		
+		}
+	}
+	
+	k = new Klass();
+	
+	
+	function setChangeListener (div, listener) {
+		/*
+		div.addEventListener("blur", listener);
+		div.addEventListener("keyup", listener);
+		div.addEventListener("paste", listener);
+		div.addEventListener("copy", listener);
+		div.addEventListener("cut", listener);
+		
+		div.addEventListener("mouseup", listener);
+		*/
+		//div.addEventListener("delete", (e) => { e.cancelDefault(); } );
+		div.addEventListener("input", listener);
+	}
+	
+	document.body.setAttribute('spellcheck', false);	
+	
+	const div = document.getElementById('source');
+	div.addEventListener("keydown", (event) => {
+	  if (event.key === "Enter") {
+		document.execCommand("insertLineBreak");
+		event.preventDefault();
+	  }
+	});
+	
+	setChangeListener(div, parse);
+	</script>
+</html>
